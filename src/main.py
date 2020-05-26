@@ -8,7 +8,7 @@ hasher = PasswordHasher()
 
 def auth(name, password):
     data = {}
-    with open('shas.json', 'r') as f:
+    with open('hashes.json', 'r') as f:
         data = json.loads(f.read())
 
     try:
@@ -24,7 +24,7 @@ def auth(name, password):
 
 def signUp(name, password):
     data = {}
-    with open('shas.json', 'r') as f:
+    with open('hashes.json', 'r') as f:
         data = json.loads(f.read())
 
     try:
@@ -35,7 +35,7 @@ def signUp(name, password):
 
     data[name] = hasher.hash(password)
 
-    with open('shas.json', 'w') as f:
+    with open('hashes.json', 'w') as f:
         json.dump(data, f)
 
     return 0
