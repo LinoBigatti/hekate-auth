@@ -1,9 +1,12 @@
 #Mockup input script
 
 import main
+import hashlib
 
+sha256 = hashlib.sha256()
 name = input('name: ')
-pwd = input('password: ')
+sha256.update(bytes(input("password: "), encoding='utf8'))
+pwd = sha256.hexdigest()
 
 while True:
     op = input("Operation: (signin/signup/exit) ")
@@ -19,5 +22,7 @@ while True:
             print("Signed up successfully. Please sign in now.")
         elif code == 1:
             print("That name is already taken.")
+        elif code == 2:
+            print("The password must not be in the 10000 most used passwords list.")
     elif op == "exit":
         exit()

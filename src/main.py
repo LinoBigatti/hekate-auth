@@ -4,8 +4,6 @@ from time import time_ns as nanos
 from argon2 import PasswordHasher
 import json
 
-hasher = PasswordHasher()
-
 def auth(name, password):
     data = {}
     with open('hashes.json', 'r') as f:
@@ -14,6 +12,7 @@ def auth(name, password):
     try:
         passwordHash = data[name]
 
+        hasher = PasswordHasher()
         if hasher.verify(passwordHash, password):
             token = hasher.hash(str(nanos()))
             return [True, token]
@@ -33,6 +32,15 @@ def signUp(name, password):
     except KeyError:
         pass
 
+    common = {}
+    with open('common.json', 'r') as f:
+        common = json.loads(f.read())
+    
+    for pwd in common:
+        if pwd == password:
+            return 2
+
+    hasher = PasswordHasher()
     data[name] = hasher.hash(password)
 
     with open('hashes.json', 'w') as f:
