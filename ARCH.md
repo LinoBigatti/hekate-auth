@@ -6,13 +6,13 @@
 3. Frontend relays them to the auth script.
 4. Auth script reads from hashes.json file.
 5. It tries to get the entry which id corresponds to the username.
-5.1 If nothing is found, return [False, None].
+5.1 If nothing is found, return 1.
 5.2 Else, proceed to step 6.
 6. Compare password's argon2 hash stored corresponds with the password hash sent.
-6.1 If it does not match, return [False, None].
+6.1 If it does not match, return 1.
 6.2 Else, proceed to step 7.
 7. Generate an argon2 hash based on nanoseconds since epoch to use as a session token.
-8. Return [True, token].
+8. Return the token.
 
 ## Signing up
 1. User inputs username and password.
