@@ -2,7 +2,10 @@
 
 from time import time_ns as nanos
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 import json
+import sys
+import hashlib
 
 def auth(name, password):
     data = {}
@@ -13,13 +16,14 @@ def auth(name, password):
         passwordHash = data[name]
 
         hasher = PasswordHasher()
-        if hasher.verify(passwordHash, password):
+        try:
+            hasher.verify(passwordHash, password)
             token = hasher.hash(str(nanos()))
-            return [True, token]
-        else:
-            return[False, None]
+            return token
+        except VerifyMismatchError:
+            return 1
     except KeyError:
-        return [False, None]
+        return 1
 
 def signUp(name, password):
     data = {}
@@ -47,3 +51,11 @@ def signUp(name, password):
         json.dump(data, f)
 
     return 0
+
+if __name__ == '__main__':
+    sha256 = hashlib.sha256()
+    sha256.update(bytes(sys.argv[2], encoding='utf8'))
+    if sys.argv[3] == '0':
+        print(str(auth(sys.argv[1], sha256.hexdigest())))
+    else:
+        print(str(signUp(sys.argv[1], sha256.hexdigest())))
