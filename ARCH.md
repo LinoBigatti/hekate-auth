@@ -26,3 +26,6 @@
 5.2 Else, continue to step 6
 6. Auth script hashes password and appends username and hashed password to hashes.json.
 7. Return 0.
+
+## Server
+todo :kekw:
