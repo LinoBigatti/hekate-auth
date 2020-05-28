@@ -2,15 +2,16 @@
 
 import hashlib
 import requests
+import json
 import urllib3
 urllib3.disable_warnings()
 
-ip = 'https://127.0.0.1:4443/'
-ip_ = input('ip: (optional) ')
-if ip_ == "":
-    print("Using default ip.")
-else:
-    ip = 'https://' + ip_ + ':4443/'
+config = {}
+with open('config.json', 'r') as f:
+    config = json.load(f)
+ip = 'https://' + config["ip"] if config["ip"] != 'localhost' else 'https://127.0.0.1'
+ip += ':' + str(config["port"]) + '/'
+cert = config["cert"]
 
 print("ip: " + ip)
 
@@ -29,9 +30,9 @@ while True:
 
     op = input("Operation: (signin/signup/get/exit) ")
     if op == "signin":
-        r = requests.post(ip, data=data1 + b'0' + data2 ,verify='certs/cert.pem')
+        r = requests.post(ip, data=data1 + b'0' + data2 ,verify=cert)
     elif op == "signup":
-        r = requests.post(ip, data=data1 + b'1' + data2 ,verify='certs/cert.pem')
+        r = requests.post(ip, data=data1 + b'1' + data2 ,verify=cert)
     elif op == "get":
         r = requests.get(ip, verify='certs/cert.pem')
     elif op == "exit":
