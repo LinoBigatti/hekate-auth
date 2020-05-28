@@ -56,15 +56,15 @@ class requestHandler(BaseHTTPRequestHandler):
             elif response == 1:
                 self.send_response(403)
                 self.end_headers()
-                self.wfile.write(b'Username or password incorrect.\n')
+                self.wfile.write(b'Username or password incorrect.')
             elif response == 2:
                 self.send_response(403)
                 self.end_headers()
-                self.wfile.write(b'That name is already taken.\n')
+                self.wfile.write(b'That name is already taken.')
             elif response == 3:
                 self.send_response(403)
                 self.end_headers()
-                self.wfile.write(b'The password cant be in the 10.000 most used passwords list.\n')
+                self.wfile.write(b'The password cant be in the 10.000 most used passwords list.')
             else:
                 self.send_response(200)
                 self.end_headers()
@@ -78,6 +78,6 @@ class requestHandler(BaseHTTPRequestHandler):
             return
 
 server = HTTPServer(('localhost', 4443), requestHandler)
-server.socket = ssl.wrap_socket(server.socket, certfile='certs/server.pem', server_side=True)
+server.socket = ssl.wrap_socket(server.socket, keyfile='certs/key.pem', certfile='certs/cert.pem', server_side=True)
 
 server.serve_forever()
