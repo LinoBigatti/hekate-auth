@@ -7,7 +7,7 @@ import json
 import sys
 import hashlib
 
-def auth(name, password):
+def auth(name : str, password : str):
     data = {}
     with open('hashes.json', 'r') as f:
         data = json.loads(f.read())
@@ -32,7 +32,7 @@ def signUp(name, password):
 
     try:
         exists_ = data[name]
-        return 1
+        return 2
     except KeyError:
         pass
 
@@ -42,7 +42,7 @@ def signUp(name, password):
     
     for pwd in common:
         if pwd == password:
-            return 2
+            return 3
 
     hasher = PasswordHasher()
     data[name] = hasher.hash(password)
