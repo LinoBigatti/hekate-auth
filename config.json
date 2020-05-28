@@ -1,0 +1,1 @@
+{"ip": "localhost", "port": 6969, "helpMessage": "This is the Hekate auth server. Please do a POST with the following payload: \n{\"op\": <operation>, \"name\": <username>, \"password\": <sha-256 hashed password>}", "key": "certs/key.pem", "cert": "certs/cert.pem"}

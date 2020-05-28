@@ -6,7 +6,15 @@ import json
 
 import main
 
-helpMessage = b'This is the Hekate auth server. Please do a POST with the following payload: \n{"op": <operation>, "name": <username>, "password": <sha-256 hashed password>}'
+config = {}
+with open('config.json', 'r') as f:
+    config = json.load(f)
+ip = config["ip"]
+port = config["port"]
+helpMessage = bytes(config["helpMessage"], encoding='utf-8')
+key = config["key"]
+cert = config["cert"]
+
 
 class requestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -77,7 +85,7 @@ class requestHandler(BaseHTTPRequestHandler):
             self.wfile.write(helpMessage)
             return
 
-server = HTTPServer(('localhost', 4443), requestHandler)
-server.socket = ssl.wrap_socket(server.socket, keyfile='certs/key.pem', certfile='certs/cert.pem', server_side=True)
+server = HTTPServer((ip, port), requestHandler)
+server.socket = ssl.wrap_socket(server.socket, keyfile=key, certfile=cert, server_side=True)
 
 server.serve_forever()
