@@ -24,7 +24,7 @@ class requestHandler(BaseHTTPRequestHandler):   #Main request handler
 
         #Get the payload
         payload_raw = self.rfile.read(content_length)
-        payload = json.loads(payload_raw.decode('utf8'))
+        payload = json.loads(str(payload_raw.decode('utf8')))
 
         try:    #Get the operation number
             op = int(payload["op"])
@@ -55,6 +55,10 @@ class requestHandler(BaseHTTPRequestHandler):   #Main request handler
         except Exception as e:  #??? I dont even know why I put this in
             self.sendHelp(400, 'Invalid payload.\n')
             return
+
+    def end_headers (self):     #Allow CORS
+        self.send_header('Access-Control-Allow-Origin', '*')
+        BaseHTTPRequestHandler.end_headers(self)
 
     def send(self, code, message):  #Send a message
         self.send_response(code)
