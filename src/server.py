@@ -35,9 +35,9 @@ class requestHandler(BaseHTTPRequestHandler):   #Main request handler
         try:
             response = None
             if op == 0:     #Authenticate
-                response = main.auth(payload["name"], payload["password"])
+                response = main.auth(payload["email"], payload["password"])
             elif op == 1:   #Sign up
-                response = main.signUp(payload["name"], payload["password"])
+                response = main.signUp(payload["name"], payload["password"], payload["email"])
             else:           #Invalid operation
                 self.sendHelp(501,  'Operation not found.\n')
                 return
@@ -45,24 +45,29 @@ class requestHandler(BaseHTTPRequestHandler):   #Main request handler
             if response == 0:   #Signed up correctly
                 self.send(200, 'Signed up successfully. Please sign in now.')
             elif response == 1: #Authentication error
-                self.send(403, 'Username or password incorrect.')
-            elif response == 2: #Username is taken
-                self.send(403, 'That name is already taken.')
+                self.send(403, 'Email or password incorrect.')
+            elif response == 2: #Email is taken
+                self.send(403, 'That email is already taken.')
             elif response == 3: #Password is too common
                 self.send(403, 'The password cant be in the 10.000 most used passwords list.')
+            elif response == 4: #Token is wrong
+                self.send(403, 'Token is incorrect. Please log out and log in again.')
             else:               #Authenticated correctly
-                self.send(200, 'Signed in successfully. Session token:\n' + response)
+                self.send(200, response)
         except Exception as e:  #??? I dont even know why I put this in
             self.sendHelp(400, 'Invalid payload.\n')
+            print("Error encountered: " + str(e))
             return
 
     def send(self, code, message):  #Send a message
         self.send_response(code)
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(bytes(message, encoding='utf8'))
 
     def sendHelp(self, code, message):  #Send a help message
         self.send_response(code)
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(bytes(message, encoding='utf8'))
         self.wfile.write(helpMessage)

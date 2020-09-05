@@ -6,52 +6,37 @@ from argon2.exceptions import VerifyMismatchError
 import json
 import sys
 import hashlib
+import os.path as path
+import mongo
 
-common = {}     #Load the 10.000 most common passwords list (Hashed with sha256)
+common = {}     #Load the 10.000 most common passwords list
 with open('common.json', 'r') as f:
     common = json.loads(f.read())
 
 #Sign in
-def auth(name : str, password : str):
-    data = {}   #Load the user data
-    with open('hashes.json', 'r') as f:
-        data = json.loads(f.read())
+def auth(email : str, password : str):
+    user = mongo.findUser(email)
 
-    try:    #Try to get the data for a given name
-        passwordHash = data[name]
-
-        hasher = PasswordHasher()
-        try:
-            hasher.verify(passwordHash, password)   #Verify the password
-
-            token = hasher.hash(str(nanos()))[30:]  #Generate a unique token
-            return token    #Send the token
-        except VerifyMismatchError: #Incorrect password
+    if user:
+        if user.verify(password):
+            return str(user.jwt())
+        else:           #Incorrect password
             return 1    #Incorrect user or password
-    except KeyError:    #Incorrect user
+    else:               #Incorrect user
         return 1        #Incorrect user or password
 
 #Sign up
-def signUp(name, password):
-    data = {}   #Load the user data
-    with open('hashes.json', 'r') as f:
-        data = json.loads(f.read())
-
-    try:    #See if the username exists
-        exists_ = data[name]
-        return 2    #Username taken
-    except KeyError:
-        pass
-    
+def signUp(name, password, email):
     for pwd in common:  #Check every common password
         if pwd == password: #If the password inputted is common, don't accept it
             return 3    #Password is too common
 
     hasher = PasswordHasher()
-    data[name] = hasher.hash(password)  #Rehash the password using argon2
+    pwd = hasher.hash(password)  #Hash the password using argon2
 
-    with open('hashes.json', 'w') as f: #Save the list
-        json.dump(data, f)
+    user = mongo.user(name, pwd, email) #Generate an user
+    if user.save() == 1:    #Email taken
+        return 2
 
     return 0    #Success
 

@@ -19,12 +19,13 @@ print("ip: " + ip)
 
 sha256 = hashlib.sha256()   #Start a hasher
 name = input('name: ')      #Get the name
+email = input('email: ')    #Get the email
 sha256.update(bytes(input("password: "), encoding='utf8'))
 pwd = sha256.hexdigest()    #Hash the password
 
 #Payload
 data1 = b'{"op": '
-data2 = bytes(', "name": "' + name + '", "password": "' + pwd + '"}', encoding='utf8')
+data2 = bytes(', "name": "' + name + '", "password": "' + pwd + ', "email": "' + email + '" }', encoding='utf8')
 
 while True:     #Command handler
     r = None
@@ -35,7 +36,7 @@ while True:     #Command handler
     elif op == "signup":    #Send a POST to sign up
         r = requests.post(ip, data=data1 + b'1' + data2 ,verify=cert)
     elif op == "get":   #Send a GET
-        r = requests.get(ip, verify='certs/cert.pem')
+        r = requests.get(ip, verify=cert)
     elif op == "exit":  #Exit
         exit()
 
